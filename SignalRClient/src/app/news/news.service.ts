@@ -1,4 +1,3 @@
-import { NewsTopicModel } from './news-topic/news-topic-model';
 
 import { Observable, of, throwError, Subject } from 'rxjs';
 import {
@@ -7,10 +6,15 @@ import {
   HttpErrorResponse
 } from '@angular/common/http';
 import { catchError, tap } from 'rxjs/operators';
+import { Injectable } from '@angular/core';
+
+import { NewsTopicModel } from './news-topic/news-topic-model';
+
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
 };
 const apiUrl = 'http://localhost:5000/api/news';
+@Injectable()
 export class NewsService {
   constructor(private http: HttpClient) {}
 
@@ -35,7 +39,7 @@ export class NewsService {
 
   generateNews(topicId: number) {
     const url = `${apiUrl}/GenerateNews`;
-    this.http.post<string>(apiUrl, topicId, httpOptions).pipe(
+    return this.http.post<string>(url, topicId, httpOptions).pipe(
       tap(() => console.log(`news generated for Topic w/ id=${topicId}`)),
       catchError(this.handleError<string>('generateNews'))
     );

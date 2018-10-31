@@ -44,7 +44,17 @@ export class NewsComponent implements OnInit {
     }
   }
 
-  onGenerateNews() {}
+  onGenerateNews() {
+    this.newsService.generateNews(this.selectedTopicId).subscribe(
+      res => {
+        alert(res);
+        console.log(res);
+      },
+      err => {
+        console.log(err);
+      }
+    );
+  }
 
   getTopicName(topicId: number) {
     if (topicId == 1) return 'Politics';
