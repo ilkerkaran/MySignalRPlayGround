@@ -29,6 +29,7 @@ namespace SignalRServer.API
                         .AllowCredentials();
                 }));
             services.AddSignalR();
+            services.AddMvc();
         }
 
         private void ConfigureDependencies(IServiceCollection services)
@@ -50,11 +51,7 @@ namespace SignalRServer.API
                 routes.MapHub<LoopyHub>("/loopy");
                 routes.MapHub<NewsHub>("/news");
             });
-
-            app.Run(async (context) =>
-            {
-                await context.Response.WriteAsync("Hello World!");
-            });
+            app.UseMvc();
         }
     }
 }
