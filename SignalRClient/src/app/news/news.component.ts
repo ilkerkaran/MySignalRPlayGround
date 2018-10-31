@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { NewsTopicModel } from './news-topic/news-topic-model';
+import { NewsService } from './news.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-news',
@@ -7,9 +10,49 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NewsComponent implements OnInit {
 
-  constructor() { }
+  constructor(public newsService: NewsService) { }
 
+  subscribedTopics: NewsTopicModel[];
+  subTopicChangedSub: Subscription;
+
+
+  selectedTopicId: number = 0;
+  subscriptionCount: number = 0;
   ngOnInit() {
+    this.subscribedTopics = this.newsService.getSubscribedNewsTopics();
+    this.subTopicChangedSub = this.newsService.subscribedTopicsChanged.subscribe(
+      topics => (this.subscribedTopics = topics)
+    );
   }
 
+  onNewsTopicChange(el) {
+    this.selectedTopicId = el.target.value;
+  }
+
+  onSubscribe() {
+    if (this.selectedTopicId > 0
+      && !this.newsService.getSubscribedNewsTopics().find(i => { return i.id == this.selectedTopicId })) {
+      this.newsService.subscribe(new NewsTopicModel(this.selectedTopicId, this.getTopicName(this.selectedTopicId)));
+      this.subscriptionCount++;
+    }
+  }
+
+  onGenerateNews() {
+
+  }
+
+  getTopicName(topicId: number) {
+    if (topicId == 1)
+      return "Politics";
+    else if (topicId == 2)
+      return "Crime";
+    if (topicId == 3)
+      return "Technology";
+    if (topicId == 4)
+      return "World News";
+    if (topicId == 5)
+      return "Sports";
+    else
+      return "";
+  }
 }

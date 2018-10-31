@@ -1,3 +1,36 @@
-<p>
-  news works!
-</p>
+<div class="container">
+  <h2>Subscribe</h2>
+  <div class="row">
+
+
+    <div class="col-md-8">
+
+      <select name="news-topic" id="input-news-topic" class='form-control' (change)='onNewsTopicChange($event)'>
+        <option value="">-- Select One --</option>
+        <option value="1">Politics</option>
+        <option value="2">Crime</option>
+        <option value="3">Technology</option>
+        <option value="4">World News</option>
+        <option value="5">Sports</option>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <button type="button" class="btn btn-primary" (click)="onSubscribe()">Subscribe</button>
+    </div>
+   
+  </div>
+  <br>
+  <div class="row" >
+
+      <div class="col-md-10">
+        <button type="button" class="btn btn-large btn-block btn-success" (click)="onGenerateNews()">Generate News</button>
+      </div>
+    </div>
+  <hr>
+  <h3 *ngIf="subscriptionCount>0">Subscribed Topics:</h3>
+  <div class="row">
+    <div class="col-xs-12">
+      <app-news-topic *ngFor="let topicId of subscribedTopics" [topic]="topicId"></app-news-topic>
+    </div>
+  </div>
+</div>
