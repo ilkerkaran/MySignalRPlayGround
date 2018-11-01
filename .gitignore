@@ -325,3 +325,6 @@ src/AngularWebpackVisualStudio/wwwroot/index.html
 src/AngularWebpackVisualStudio/wwwroot/
 src/AngularRedux/wwwroot
 src/AspNetCoreAngularSignalR/wwwroot/
+
+#net core appsetting
+appsetting.json

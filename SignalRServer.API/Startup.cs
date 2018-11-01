@@ -32,7 +32,7 @@ namespace SignalRServer.API
 
 
 
-            services.AddSignalR();
+            services.AddSignalR().AddAzureSignalR();
             services.AddMvc();
         }
 
@@ -52,7 +52,7 @@ namespace SignalRServer.API
             }
 
 
-            app.UseSignalR(routes =>
+            app.UseAzureSignalR(routes =>
             {
                 routes.MapHub<LoopyHub>("/loopy");
                 routes.MapHub<NewsHub>("/news");
