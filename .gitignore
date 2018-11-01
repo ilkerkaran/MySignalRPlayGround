@@ -327,4 +327,8 @@ src/AngularRedux/wwwroot
 src/AspNetCoreAngularSignalR/wwwroot/
 
 #net core appsetting
-appsetting.json
+appsettings.json
+
+#deployment folders
+*.zip
+*.rar

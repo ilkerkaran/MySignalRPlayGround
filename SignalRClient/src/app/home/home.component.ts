@@ -40,8 +40,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
     ngOnDestroy() {
         this._hubConnection.stop();
-        //Called once, before the instance is destroyed.
-        //Add 'implements OnDestroy' to the class.
+        // Called once, before the instance is destroyed.
+        // Add 'implements OnDestroy' to the class.
     }
 
 }

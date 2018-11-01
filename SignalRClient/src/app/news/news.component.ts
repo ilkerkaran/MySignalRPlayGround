@@ -34,7 +34,7 @@ export class NewsComponent implements OnInit, OnDestroy {
 
     this.historySub = this.newsService.historyReceived.subscribe(
       (data: string[]) => {
-        this.feed.push(...data);
+        this.history.push(...data);
       }
     );
   }
@@ -68,7 +68,6 @@ export class NewsComponent implements OnInit, OnDestroy {
   onGenerateNews() {
     this.newsService.generateNews(this.selectedTopicId).subscribe(
       res => {
-        alert(res);
         console.log(res);
       },
       err => {
