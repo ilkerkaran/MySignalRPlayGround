@@ -14,14 +14,13 @@ namespace SignalRServer.API.Hubs
             this.newsService = newsService;
         }
 
-        public Task Send(string groupName)
+        public async Task Send((string groupName, string generatedNews) news)
         {
-            if (!newsService.CheckTopic(groupName))
+            if (!newsService.CheckTopic(news.groupName))
             {
                 throw new System.Exception("cannot send a news item to a group which does not exist.");
             }
-            var generatedNews = newsService.GenerateNewNews(groupName);
-            return Clients.Group(groupName).SendAsync("Send", generatedNews);
+            await Clients.Group(news.groupName).SendAsync("NewsFeed", news.generatedNews);
         }
 
         public async Task JoinGroup(string groupName)

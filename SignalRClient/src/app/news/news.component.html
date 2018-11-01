@@ -17,20 +17,69 @@
     <div class="col-md-4">
       <button type="button" class="btn btn-primary" (click)="onSubscribe()">Subscribe</button>
     </div>
-   
+
   </div>
   <br>
-  <div class="row" >
+  <div class="row">
 
-      <div class="col-md-10">
-        <button type="button" class="btn btn-large btn-block btn-success" (click)="onGenerateNews()">Generate News</button>
+    <div class="col-md-10">
+      <button type="button" class="btn btn-large btn-block btn-success" (click)="onGenerateNews()">Generate News</button>
+    </div>
+  </div>
+  <hr>
+  <hr>
+  <div class="container"></div>
+  <h2>Feed</h2>
+  <div class="row">
+    <div class="row" *ngIf="feed.length > 0">
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Messages</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let message of feed; let i = index">
+              <td>{{i + 1}}</td>
+              <td>{{message}}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
-  <hr>
-  <h3 *ngIf="subscriptionCount>0">Subscribed Topics:</h3>
+
+    <div class="col-md-12">
+      <div class="row" *ngIf="feed.length <= 0">
+        <span>No messages</span>
+      </div>
+    </div>
+  </div>
+  <h2>History</h2>
   <div class="row">
-    <div class="col-xs-12">
-      <app-news-topic *ngFor="let topicId of subscribedTopics" [topic]="topicId"></app-news-topic>
+    <div class="row" *ngIf="history.length > 0">
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Messages</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let h of history; let i = index">
+              <td>{{i + 1}}</td>
+              <td>{{h}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="row" *ngIf="history.length <= 0">
+        <span>No History</span>
+      </div>
     </div>
   </div>
 </div>

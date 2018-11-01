@@ -17,8 +17,6 @@ namespace SignalRServer.API
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            ConfigureDependencies(services);
-
 
             services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
                 {
@@ -28,6 +26,12 @@ namespace SignalRServer.API
                         .AllowAnyOrigin()
                         .AllowCredentials();
                 }));
+
+
+            ConfigureDependencies(services);
+
+
+
             services.AddSignalR();
             services.AddMvc();
         }
@@ -35,16 +39,18 @@ namespace SignalRServer.API
         private void ConfigureDependencies(IServiceCollection services)
         {
             services.AddSingleton<NewsService>();
+            services.AddSingleton<NewsHub>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseCors("CorsPolicy");
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseCors("CorsPolicy");
+
 
             app.UseSignalR(routes =>
             {

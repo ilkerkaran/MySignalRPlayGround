@@ -31,19 +31,19 @@ namespace SignalRServer.API.Services
             topicNews.Add(5, GetSeedSportsNews());
         }
 
-        public string GenerateNewNews(int topicId)
+        public (string topicName, string news) GenerateNewNews(int topicId)
         {
             if (topics.TryGetValue(topicId, out var topicName))
             {
                 var generatedNews = $"Generated {topicName} news _ {DateTime.UtcNow}";
                 topicNews[topicId].Add(generatedNews);
-                return generatedNews;
+                return (topicName, generatedNews);
             }
             else
-                return string.Empty;
+                return (string.Empty, string.Empty);
         }
 
-        public string GenerateNewNews(string topicName)
+        public (string topicName, string news) GenerateNewNews(string topicName)
         {
             var topicItem = topics.FirstOrDefault(topic => string.Equals(topic.Value, topicName, StringComparison.CurrentCultureIgnoreCase));
             return GenerateNewNews(topicItem.Key);

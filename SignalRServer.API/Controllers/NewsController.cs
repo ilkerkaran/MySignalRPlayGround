@@ -1,5 +1,8 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using SignalRServer.API.Hubs;
 using SignalRServer.API.Services;
 
 namespace SignalRServer.API.Controllers
@@ -9,15 +12,20 @@ namespace SignalRServer.API.Controllers
     public class NewsController : Controller
     {
         private readonly NewsService newsService;
+        private readonly NewsHub newsHub;
 
-        public NewsController(NewsService newsService)
+        public NewsController(NewsService newsService, NewsHub newsHub)
         {
             this.newsService = newsService;
+            this.newsHub = newsHub;
         }
         [HttpPost("[action]")]
+        [EnableCors("CorsPolicy")]
         public async Task<IActionResult> GenerateNews([FromBody] int topicId)
         {
-            return await Task.Run(() => Ok(newsService.GenerateNewNews(topicId)));
+            var news = newsService.GenerateNewNews(topicId);
+            await newsHub.Send(news);
+            return await Task.Run(() => Ok(news));
         }
 
         [HttpGet("{topicId}")]

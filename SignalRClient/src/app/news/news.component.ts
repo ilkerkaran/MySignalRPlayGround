@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NewsTopicModel } from './news-topic/news-topic-model';
 import { NewsService } from './news.service';
 import { Subscription } from 'rxjs';
@@ -8,12 +8,16 @@ import { Subscription } from 'rxjs';
   templateUrl: './news.component.html',
   styleUrls: ['./news.component.css']
 })
-export class NewsComponent implements OnInit {
+export class NewsComponent implements OnInit, OnDestroy {
   constructor(public newsService: NewsService) {}
 
   subscribedTopics: NewsTopicModel[];
   subTopicChangedSub: Subscription;
+  feedSub: Subscription;
+  historySub: Subscription;
 
+  feed: string[] = [];
+  history: string[] = [];
   selectedTopicId = 0;
   subscriptionCount = 0;
   ngOnInit() {
@@ -21,6 +25,24 @@ export class NewsComponent implements OnInit {
     this.subTopicChangedSub = this.newsService.subscribedTopicsChanged.subscribe(
       topics => (this.subscribedTopics = topics)
     );
+
+    this.feedSub = this.newsService.newsFeedReceived.subscribe(
+      (data: string) => {
+        this.feed.push(data);
+      }
+    );
+
+    this.historySub = this.newsService.historyReceived.subscribe(
+      (data: string[]) => {
+        this.feed.push(...data);
+      }
+    );
+  }
+
+  ngOnDestroy() {
+    this.feedSub.unsubscribe();
+    this.subTopicChangedSub.unsubscribe();
+    this.historySub.unsubscribe();
   }
 
   onNewsTopicChange(el) {
@@ -34,12 +56,11 @@ export class NewsComponent implements OnInit {
         return i.id == this.selectedTopicId;
       })
     ) {
-      this.newsService.subscribe(
-        new NewsTopicModel(
-          this.selectedTopicId,
-          this.getTopicName(this.selectedTopicId)
-        )
+      const topicModel = new NewsTopicModel(
+        this.selectedTopicId,
+        this.getTopicName(this.selectedTopicId)
       );
+      this.newsService.subscribe(topicModel);
       this.subscriptionCount++;
     }
   }
