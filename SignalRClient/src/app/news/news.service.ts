@@ -1,3 +1,4 @@
+import { EnvironmentUrlService } from './../shared/environment-url.service';
 import { Observable, of, throwError, Subject } from 'rxjs';
 import {
   HttpClient,
@@ -14,7 +15,6 @@ import { HubConnection, HubConnectionBuilder } from '@aspnet/signalr';
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
 };
-const apiUrl = 'http://localhost:5000/api/news';
 const WAIT_UNTIL_ASPNETCORE_IS_READY_DELAY_IN_MS = 2000;
 
 @Injectable()
@@ -23,15 +23,22 @@ export class NewsService {
   private subscribedTopics: NewsTopicModel[] = [];
   subscribedTopicsChanged = new Subject<NewsTopicModel[]>();
   private _hubConnection: HubConnection | undefined;
-  private readonly hubUrl = 'http://localhost:5000/news/';
+  private readonly apiUrl: string;
+  private readonly hubUrl: string;
+
   private headers: HttpHeaders;
   connectionEstablished = new Subject<Boolean>();
   historyReceived = new Subject<string[]>();
   newsFeedReceived = new Subject<string>();
 
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient,
+    private environmentUrlService: EnvironmentUrlService
+  ) {
+    this.apiUrl = `${this.environmentUrlService.urlAddress}/api/news`;
+    this.hubUrl = `${this.environmentUrlService.urlAddress}/news`;
+    console.log(this.apiUrl);
     this.init();
-
     this.headers = new HttpHeaders();
     this.headers = this.headers.set('Content-Type', 'application/json');
     this.headers = this.headers.set('Accept', 'application/json');
@@ -63,7 +70,7 @@ export class NewsService {
   }
 
   generateNews(topicId: number) {
-    const url = `${apiUrl}/GenerateNews`;
+    const url = `${this.apiUrl}/GenerateNews`;
     return this.http.post<string>(url, topicId, httpOptions).pipe(
       tap(() => console.log(`news generated for Topic w/ id=${topicId}`)),
       catchError(this.handleError<string>('generateNews'))

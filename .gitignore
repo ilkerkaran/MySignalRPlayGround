@@ -332,3 +332,4 @@ appsettings.json
 #deployment folders
 *.zip
 *.rar
+SignalRClient/dist

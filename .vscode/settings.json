@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/c0615c2f-31c0-4adf-916f-c527e67f53e4/resourceGroups/MiddleEarth/providers/Microsoft.Web/sites/news-app",
+    "appService.deploySubpath": "SignalRClient\\dist\\SignalRClient"
+}

@@ -1,3 +1,4 @@
+import { EnvironmentUrlService } from './shared/environment-url.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -23,7 +24,7 @@ import { NewsService } from './news/news.service';
     FormsModule,
     HttpClientModule
   ],
-  providers: [NewsService],
+  providers: [NewsService, EnvironmentUrlService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
