@@ -16,7 +16,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   message = '';
   messages: string[] = [];
   constructor(private environmentUrlService: EnvironmentUrlService) {
-    this.fullPath = `${this.environmentUrlService.urlAddress}/loopy`;
+    this.fullPath = `${this.environmentUrlService.urlAddress}/hub/loopy`;
   }
 
   public sendMessage(): void {

@@ -2,13 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Primitives;
+using Microsoft.IdentityModel.Tokens;
 using SignalRServer.API.Hubs;
+using SignalRServer.API.Security;
 using SignalRServer.API.Services;
+using SignalRServer.API.ViewModels;
 
 namespace SignalRServer.API
 {
@@ -37,17 +42,53 @@ namespace SignalRServer.API
 
 
             ConfigureDependencies(services);
-
+            ConfigureJwtAuthService(services);
 
 
             services.AddSignalR().AddAzureSignalR();
             services.AddMvc();
         }
 
+        private void ConfigureJwtAuthService(IServiceCollection services)
+        {
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                // Validate token expiration
+                ValidateLifetime = true,
+
+                ClockSkew = TimeSpan.Zero
+            };
+            var jwtBearerEvents = new JwtBearerEvents()
+            {
+                OnMessageReceived = context =>
+                {
+                    if (context.Request.Path.ToString().StartsWith("/hub/", StringComparison.InvariantCultureIgnoreCase) && context.Request.Query.TryGetValue("access_token", out StringValues token))
+                    {
+                        context.Token = token;
+                    }
+                    return Task.CompletedTask;
+                },
+                OnAuthenticationFailed = context =>
+                {
+                    var te = context.Exception;
+                    return Task.CompletedTask;
+                }
+            };
+            services.AddAuthentication()
+                .AddJwtBearer(o =>
+                {
+                    o.Events = jwtBearerEvents;
+                    o.TokenValidationParameters = tokenValidationParameters;
+                });
+        }
+
         private void ConfigureDependencies(IServiceCollection services)
         {
             services.AddSingleton<NewsService>();
             services.AddSingleton<NewsHub>();
+            services.AddSingleton<UserService>();
+            services.AddScoped<JwtFactory>();
+            services.AddScoped<CredentialsViewModel>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -62,8 +103,8 @@ namespace SignalRServer.API
 
             app.UseAzureSignalR(routes =>
             {
-                routes.MapHub<LoopyHub>("/loopy");
-                routes.MapHub<NewsHub>("/news");
+                routes.MapHub<LoopyHub>("/hub/loopy");
+                routes.MapHub<NewsHub>("/hub/news");
             });
             app.UseMvc();
         }

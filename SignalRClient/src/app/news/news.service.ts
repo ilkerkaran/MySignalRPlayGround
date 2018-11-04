@@ -36,7 +36,7 @@ export class NewsService {
     private environmentUrlService: EnvironmentUrlService
   ) {
     this.apiUrl = `${this.environmentUrlService.urlAddress}/api/news`;
-    this.hubUrl = `${this.environmentUrlService.urlAddress}/news`;
+    this.hubUrl = `${this.environmentUrlService.urlAddress}/hub/news`;
     console.log(this.apiUrl);
     this.init();
     this.headers = new HttpHeaders();
