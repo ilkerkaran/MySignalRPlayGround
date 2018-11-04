@@ -23,7 +23,7 @@ namespace SignalRServer.API.Security
             var jwt = new JwtSecurityToken(
                 claims: claims,
                 notBefore: utcNow,
-                expires: utcNow.Add(TimeSpan.FromMinutes(1)),
+                expires: utcNow.AddMinutes(1),
                 signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256));
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 

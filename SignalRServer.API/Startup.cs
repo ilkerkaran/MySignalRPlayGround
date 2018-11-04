@@ -60,10 +60,9 @@ namespace SignalRServer.API
                 ValidateAudience = false,
                 ValidateIssuerSigningKey = true,
                 // Validate token expiration
-                // ValidateLifetime = true,
-ValidIssuer="osman",
-ValidAudience ="osman"
-                // ClockSkew = TimeSpan.Zero
+                 ValidateLifetime = true,
+                 
+                 ClockSkew = TimeSpan.Zero
             };
             var jwtBearerEvents = new JwtBearerEvents()
             {
@@ -85,6 +84,7 @@ ValidAudience ="osman"
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                
 
             })
                 .AddJwtBearer(o =>
