@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 })
 export class AuthService {
   private readonly apiUrl: string;
-
+  public token: string;
   public isAuthenticated = new Subject<boolean>();
 
   constructor(
@@ -32,6 +32,7 @@ export class AuthService {
           localStorage.setItem('access_token', JSON.parse(result).access_token);
           localStorage.setItem('auth', JSON.stringify(result));
           this.isAuthenticated.next(true);
+          this.token = JSON.parse(result).access_token;
           this.router.navigate(['/news']);
           return true;
         })
@@ -41,6 +42,7 @@ export class AuthService {
   logout() {
     localStorage.removeItem('access_token');
     localStorage.removeItem('auth');
+    this.token = null;
     this.isAuthenticated.next(false);
   }
 }

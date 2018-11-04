@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -23,7 +24,6 @@ namespace SignalRServer.API
         {
             Configuration = configuration;
         }
-
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -51,12 +51,19 @@ namespace SignalRServer.API
 
         private void ConfigureJwtAuthService(IServiceCollection services)
         {
+            var keyByteArray = Encoding.ASCII.GetBytes("this is a custom Secret key for authnetication, Hell YEAH!!!");
+            var signingKey = new SymmetricSecurityKey(keyByteArray);
             var tokenValidationParameters = new TokenValidationParameters
             {
+                IssuerSigningKey = signingKey,
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateIssuerSigningKey = true,
                 // Validate token expiration
-                ValidateLifetime = true,
-
-                ClockSkew = TimeSpan.Zero
+                // ValidateLifetime = true,
+ValidIssuer="osman",
+ValidAudience ="osman"
+                // ClockSkew = TimeSpan.Zero
             };
             var jwtBearerEvents = new JwtBearerEvents()
             {
@@ -74,9 +81,16 @@ namespace SignalRServer.API
                     return Task.CompletedTask;
                 }
             };
-            services.AddAuthentication()
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+            })
                 .AddJwtBearer(o =>
                 {
+                    
+                    o.RequireHttpsMetadata = false;
                     o.Events = jwtBearerEvents;
                     o.TokenValidationParameters = tokenValidationParameters;
                 });
@@ -99,6 +113,7 @@ namespace SignalRServer.API
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseAuthentication();
 
 
             app.UseAzureSignalR(routes =>

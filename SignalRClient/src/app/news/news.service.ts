@@ -1,3 +1,4 @@
+import { AuthService } from './../shared/auth.service';
 import { EnvironmentUrlService } from './../shared/environment-url.service';
 import { Observable, of, throwError, Subject } from 'rxjs';
 import {
@@ -12,9 +13,6 @@ import { NewsTopicModel } from './news-topic/news-topic-model';
 import { HubConnection, HubConnectionBuilder } from '@aspnet/signalr';
 
 // Constants
-const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-};
 const WAIT_UNTIL_ASPNETCORE_IS_READY_DELAY_IN_MS = 2000;
 
 @Injectable()
@@ -26,22 +24,28 @@ export class NewsService {
   private readonly apiUrl: string;
   private readonly hubUrl: string;
 
-  private headers: HttpHeaders;
+  private httpOptions: any;
   connectionEstablished = new Subject<Boolean>();
   historyReceived = new Subject<string[]>();
   newsFeedReceived = new Subject<string>();
 
   constructor(
     private http: HttpClient,
-    private environmentUrlService: EnvironmentUrlService
+    private environmentUrlService: EnvironmentUrlService,
+    private authService: AuthService
   ) {
     this.apiUrl = `${this.environmentUrlService.urlAddress}/api/news`;
     this.hubUrl = `${this.environmentUrlService.urlAddress}/hub/news`;
     console.log(this.apiUrl);
+
+    this.httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: 'Bearer ' + this.authService.token
+      })
+    };
     this.init();
-    this.headers = new HttpHeaders();
-    this.headers = this.headers.set('Content-Type', 'application/json');
-    this.headers = this.headers.set('Accept', 'application/json');
   }
 
   getSubscribedNewsTopics() {
@@ -71,7 +75,7 @@ export class NewsService {
 
   generateNews(topicId: number) {
     const url = `${this.apiUrl}/GenerateNews`;
-    return this.http.post<string>(url, topicId, httpOptions).pipe(
+    return this.http.post<string>(url, topicId, this.httpOptions).pipe(
       tap(() => console.log(`news generated for Topic w/ id=${topicId}`)),
       catchError(this.handleError<string>('generateNews'))
     );
@@ -114,7 +118,9 @@ export class NewsService {
 
   private createConnection() {
     this._hubConnection = new HubConnectionBuilder()
-      .withUrl(this.hubUrl)
+      .withUrl(this.hubUrl, {
+        accessTokenFactory: () => localStorage.getItem('access_token')
+      })
       .build();
   }
 

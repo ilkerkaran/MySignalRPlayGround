@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -21,6 +22,7 @@ namespace SignalRServer.API.Controllers
         }
         [HttpPost("[action]")]
         [EnableCors("CorsPolicy")]
+        [Authorize]
         public async Task<IActionResult> GenerateNews([FromBody] int topicId)
         {
             var news = newsService.GenerateNewNews(topicId);
